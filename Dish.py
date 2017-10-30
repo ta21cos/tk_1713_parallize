@@ -21,14 +21,12 @@ class Dish():
         cur = conn.cursor()
         cur.execute("SELECT * FROM recipes where id = (%s);", [recipe_id])
         recipe = cur.fetchone()
-        print(recipe)
         self.recipe_id = recipe[0]
         self.name = recipe[1]
 
 
         cur.execute("select * from cooking_processes where recipe_id = (%s);", [recipe_id])
         processes = cur.fetchall()
-        print(processes)
         for process in processes:
             step_no = process[1]
             description = process[2]
@@ -96,9 +94,5 @@ class Process():
 if __name__ == "__main__":
     dish = Dish()
     dish.getRecipe(3)
-    print(dish.procedure)
     exit(-1)
     dish.addTestProcedure("nikujaga")
-
-    for process in dish.procedure:
-        print(process.description)

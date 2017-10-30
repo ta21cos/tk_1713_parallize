@@ -48,7 +48,6 @@ class Cookdule():
             for i, (dish, observer) in enumerate(zip(dishes, observers)):
                 if observer.completed == False and \
                         observer.is_cooking == False:
-                    print(i, observer.completed, observer.cooking_process)
                     if dish.procedure[observer.cooking_process].needStove() and num_remained_stove == 0:
                         continue
                     if dish.procedure[observer.cooking_process].isLoadingWork() and cook_loaded == True:
@@ -72,13 +71,9 @@ class Cookdule():
             for observer in observers:
                 if observer.is_cooking == True:
                     observer.remained_time[observer.cooking_process] -= 1
-            for observer in observers:
-                print(observer.is_cooking, observer.cooking_process, observer.remained_time, observer.completed)
-            print("")
 
             # if loop==10:
              #    break
-        print(procedure)
         self.procedure = procedure
 
     def getDishName(self, dish_idx):
@@ -92,6 +87,12 @@ class Cookdule():
 
     def getCookDuration(self, dish_idx, process_idx):
         return self.dishes[dish_idx].procedure[process_idx].time
+
+    def getMovieStartTime(self, dish_idx, process_idx):
+        return self.dishes[dish_idx].procedure[process_idx].movie_start
+    def getMovieEndTime(self, dish_idx, process_idx):
+        return self.dishes[dish_idx].procedure[process_idx].movie_end
+
 
     def displayProcedure(self):
         if self.procedure is None:
@@ -121,12 +122,12 @@ class Cookdule():
 
         content = []
         for i, process in enumerate(self.procedure):
-            content.append({"index": i, "description": self.getCookDescription(process[1], process[2]), "duration": self.getCookDuration(process[1], process[2]), "mo_start": 0, "mo_end": 0, "recipe_id": self.getDishId(process[1])})
+            content.append({"index": i, "description": self.getCookDescription(process[1], process[2]), "duration": self.getCookDuration(process[1], process[2]), "mo_start": self.getMovieStartTime(process[1], process[2]), "mo_end": self.getMovieEndTime(process[1], process[2]), "recipe_id": self.getDishId(process[1])})
 
         _json = {"result": content}
         with open("procedure.json", "w") as f:
             json.dump(_json, f)
-        print(_json)
+        # print(_json)
         return _json
 
 
@@ -144,7 +145,6 @@ def main_test():
 def main_db():
     dish1 = Dish()
     dish1.getRecipe(3)
-    print(dish1.procedure[0].time)
     dish2 = Dish()
     dish2.getRecipe(10)
 
@@ -162,6 +162,7 @@ def main(recipe_ids):
 
     cookdule = Cookdule(dishes)
     cookdule.parallize()
+    cookdule.displayProcedure()
     return cookdule.exportProcedure()
 
 
